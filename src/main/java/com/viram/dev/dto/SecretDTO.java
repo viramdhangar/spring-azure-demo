@@ -1,28 +1,25 @@
-package com.docker.springdockerd.dto;
+package com.viram.dev.dto;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Table
-@Data
-@Setter
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Employee {
-
+@Data
+@Table(name="secret_tbl")
+public class SecretDTO {
 	@Id
-	@GeneratedValue
-	private int id;
-	private String name;
-	private String dept;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
+	private String idType;
+	private String idValue;
+	private String type;
 }
