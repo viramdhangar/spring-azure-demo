@@ -14,19 +14,23 @@ import com.viram.dev.dto.InitiatePaymentDTO;
 import com.viram.dev.dto.PaymentResponse;
 
 @RestController
-@CrossOrigin(origins = {"*"}, maxAge = 3600)
-@RequestMapping("/payment")
+@CrossOrigin(origins = "http://localhost:8100")
 public class PaymentController {
 	
 	@Autowired
 	private InitiatePaymentService paymentService;
 
-	@PostMapping(value="/initiate-payment")
+	@GetMapping("/welcome")
+	public String welcome() {
+		return "Welcome to azure!!";
+	} 
+	
+	@PostMapping("/initiate-payment")
 	public InitiatePaymentDTO initiatePayment(@RequestBody InitiatePaymentDTO initiatePaymentDTO) {
 		return paymentService.initiatePayment(initiatePaymentDTO);
 	}
 	
-	@PostMapping(value="/payment-response")
+	@PostMapping("/payment-response")
 	public PaymentResponse paymentResponse(@RequestBody Map<String, String> map) {
 		return paymentService.savePaymentAudit(map);
 	}
