@@ -14,7 +14,7 @@ import com.viram.dev.dto.InitiatePaymentDTO;
 import com.viram.dev.dto.PaymentResponse;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8100")
+@CrossOrigin(origins = "*")
 public class PaymentController {
 	
 	@Autowired
