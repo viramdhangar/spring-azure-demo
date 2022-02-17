@@ -20,6 +20,6 @@ public class Order {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 	private String orderId;
-	private String orderAmount;
+	private int orderAmount;
 	private String orderCurrency;
 }

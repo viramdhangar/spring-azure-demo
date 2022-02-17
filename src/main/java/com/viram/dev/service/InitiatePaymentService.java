@@ -69,7 +69,7 @@ public class InitiatePaymentService {
 		Order order = new Order();
 		Order savedOrder = orderRepo.save(order);
 		savedOrder.setOrderId(savedOrder.getId()+"ORD"+paymentDTO.getCustomerPhone().substring(0, 2)+paymentDTO.getCustomerName().substring(0, 3).toUpperCase());
-		savedOrder.setOrderAmount(paymentDTO.getOrderAmount());
+		savedOrder.setOrderAmount(Integer.parseInt(paymentDTO.getOrderAmount()));
 		savedOrder.setOrderCurrency("INR");
 		orderRepo.save(savedOrder);
 		
