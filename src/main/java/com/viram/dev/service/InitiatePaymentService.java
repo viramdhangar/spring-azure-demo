@@ -79,7 +79,7 @@ public class InitiatePaymentService {
 		paymentDTO.setOrderCurrency("INR");
 		paymentDTO.setOrderId(savedOrder.getOrderId());
 		paymentDTO.setOrderNote("Payment to dev");
-		paymentDTO.setStage(conf.getType());
+		paymentDTO.setStage(conf.getSecretDesc());
 		initiatePaymentRepo.save(paymentDTO);
 		
 		paymentDTO.setTokenData(tokenGenerated.getCftoken());

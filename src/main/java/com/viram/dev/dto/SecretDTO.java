@@ -22,4 +22,5 @@ public class SecretDTO {
 	private String idType;
 	private String idValue;
 	private String type;
+	private String secretDesc;
 }

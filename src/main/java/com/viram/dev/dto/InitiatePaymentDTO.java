@@ -6,6 +6,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +21,7 @@ public class InitiatePaymentDTO {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@JsonIgnore
 	private Integer id;
 	private String appId;
 	private String orderId;
@@ -28,7 +31,7 @@ public class InitiatePaymentDTO {
 	private String customerName;
 	private String customerPhone;
 	private String customerEmail;
-	
+	@JsonIgnore
 	private String notifyUrl;
 	private String stage;
 	private String tokenData;
