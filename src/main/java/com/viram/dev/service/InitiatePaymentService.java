@@ -113,8 +113,12 @@ public class InitiatePaymentService {
 		
 		paymentDTO.setAppId(secret.getIdType());
 		paymentDTO.setOrderCurrency("INR");
+		paymentDTO.setOrderAmount(String.valueOf(to.getOrderAmount()));
 		paymentDTO.setOrderId(to.getOrderId());
 		paymentDTO.setOrderNote("Payment to dev");
+		paymentDTO.setCustomerName("Payment to dev");
+		paymentDTO.setCustomerEmail("viram.dhangar@gmail.com");
+		paymentDTO.setCustomerPhone("8097547286");
 		paymentDTO.setStage(secret.getSecretDesc());
 		initiatePaymentRepo.save(paymentDTO);
 		
