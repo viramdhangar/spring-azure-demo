@@ -1,5 +1,6 @@
 package com.viram.dev.controller;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class PaymentController {
 	} 
 	
 	@PostMapping("/initiate-payment")
-	public InitiatePaymentDTO initiatePayment(@RequestBody InitiatePaymentDTO initiatePaymentDTO) {
+	public InitiatePaymentDTO initiatePayment(@RequestBody InitiatePaymentDTO initiatePaymentDTO) throws IOException {
 		return paymentService.initiatePayment(initiatePaymentDTO);
 	}
 	

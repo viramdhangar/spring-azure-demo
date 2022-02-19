@@ -1,5 +1,6 @@
 package com.viram.dev.service;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -12,16 +13,25 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.viram.dev.dto.InitiatePaymentDTO;
 import com.viram.dev.dto.Order;
 import com.viram.dev.dto.PaymentResponse;
 import com.viram.dev.dto.SecretDTO;
 import com.viram.dev.dto.Token;
+import com.viram.dev.dto.TokenOrder;
 import com.viram.dev.repository.InitiatePaymentRepo;
 import com.viram.dev.repository.OrderRepo;
 import com.viram.dev.repository.PaymentResponseRepo;
 import com.viram.dev.repository.SecretRepo;
 import com.viram.dev.util.Constants;
+
+import okhttp3.Call;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 @Component
 public class InitiatePaymentService {
@@ -47,39 +57,65 @@ public class InitiatePaymentService {
 	    return new RestTemplate();
 	}
 	
-	public Token getToken(InitiatePaymentDTO paymentDTO, SecretDTO secret, Order savedOrder) {
-		
+	/*
+	 * public String getTokenWithOk(InitiatePaymentDTO paymentDTO, SecretDTO secret,
+	 * Order savedOrder) throws IOException {
+	 * 
+	 * final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+	 * 
+	 * ObjectMapper obj = new ObjectMapper(); String json =
+	 * obj.writeValueAsString(savedOrder);
+	 * 
+	 * OkHttpClient client = new OkHttpClient.Builder() .build();
+	 * 
+	 * RequestBody body = RequestBody.create(JSON, json);
+	 * 
+	 * Request request = new Request.Builder()
+	 * .url("https://test.cashfree.com/api/v2/cftoken/order")
+	 * .addHeader("Content-Type", "application/json") .addHeader("x-client-id",
+	 * secret.getIdType()) .addHeader("x-client-secret", secret.getIdValue())
+	 * .post(body) .build();
+	 * 
+	 * Call call = client.newCall(request); Response response = call.execute();
+	 * System.out.println(response.body().string()); return
+	 * response.body().string();
+	 * 
+	 * }
+	 */
+	public Token getToken(SecretDTO secret, TokenOrder order) throws IOException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-		headers.set("x-client-id", secret.getIdType()); //4568cb305ede27b930ed22b58654
-		headers.set("x-client-secret", secret.getIdValue()); //3537a7696f8183ae8f2cfaf7b2f6ffed825c77cf
-		HttpEntity<Order> entity = new HttpEntity<Order>(savedOrder, headers);
+		headers.set("x-client-id", secret.getIdType()); 
+		headers.set("x-client-secret", secret.getIdValue());
+		HttpEntity<TokenOrder> entity = new HttpEntity<TokenOrder>(order, headers);
 
 		return restTemplate
 				.exchange("https://test.cashfree.com/api/v2/cftoken/order", HttpMethod.POST, entity, Token.class)
 				.getBody();
 	}
 
-	public InitiatePaymentDTO initiatePayment(InitiatePaymentDTO paymentDTO) {
+	public InitiatePaymentDTO initiatePayment(InitiatePaymentDTO paymentDTO) throws IOException {
 
 		// get secret
-		SecretDTO conf = secretRepo.findByType(Constants.SECRET);
+		SecretDTO secret = secretRepo.findByType(Constants.SECRET);
 		
 		
 		Order order = new Order();
 		Order savedOrder = orderRepo.save(order);
-		savedOrder.setOrderId(savedOrder.getId()+"ORD"+paymentDTO.getCustomerPhone().substring(0, 2)+paymentDTO.getCustomerName().substring(0, 3).toUpperCase());
-		savedOrder.setOrderAmount(Integer.parseInt(paymentDTO.getOrderAmount()));
-		savedOrder.setOrderCurrency("INR");
+		TokenOrder to = new TokenOrder(); 
+		to.setOrderId(String.valueOf(savedOrder.getId()));
+		to.setOrderAmount(Integer.parseInt(paymentDTO.getOrderAmount()));
+		to.setOrderCurrency("INR");
+		
 		orderRepo.save(savedOrder);
 		
-		Token tokenGenerated = getToken(paymentDTO, conf, savedOrder);
+		Token tokenGenerated = getToken(secret, to);
 		
-		paymentDTO.setAppId(conf.getIdType());
+		paymentDTO.setAppId(secret.getIdType());
 		paymentDTO.setOrderCurrency("INR");
-		paymentDTO.setOrderId(savedOrder.getOrderId());
+		paymentDTO.setOrderId(to.getOrderId());
 		paymentDTO.setOrderNote("Payment to dev");
-		paymentDTO.setStage(conf.getSecretDesc());
+		paymentDTO.setStage(secret.getSecretDesc());
 		initiatePaymentRepo.save(paymentDTO);
 		
 		paymentDTO.setTokenData(tokenGenerated.getCftoken());
