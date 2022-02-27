@@ -1,24 +1,40 @@
 package com.viram.dev.service;
 
-import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.viram.dev.dto.Address;
 import com.viram.dev.dto.DAOUser;
+import com.viram.dev.dto.mat.BasicDetails;
+import com.viram.dev.repository.AddressRepository;
+import com.viram.dev.repository.UserRepository;
 import com.viram.dev.repository.mat.AboutDetailsRepository;
 import com.viram.dev.repository.mat.BasicDetailsRepository;
+import com.viram.dev.repository.mat.MatImageRepository;
 import com.viram.dev.repository.mat.MatrimonyRegistration;
 import com.viram.dev.repository.mat.PersonalDetailsRepository;
 import com.viram.dev.repository.mat.ProfessionalDetailsRepository;
 import com.viram.dev.repository.mat.ReligionDetailsRepository;
-import com.viram.dev.repository.mat.StatusDetailsRepository;
 
 @Component
 public class MatrimonyRegistrationService {
 
 	@Autowired
 	private JwtUserDetailsService userService;
+	
+	@Autowired
+	private MatImageRepository matImageRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
+	private AddressRepository addressRepository;
 	
 	@Autowired
 	private BasicDetailsRepository basicDetailsRepository;
@@ -30,47 +46,27 @@ public class MatrimonyRegistrationService {
 	private ReligionDetailsRepository religionDetailsRepository;
 	
 	@Autowired
-	private StatusDetailsRepository statusDetailsRepository;
-	
-	@Autowired
 	private ProfessionalDetailsRepository professionalDetailsRepository;
 	
 	@Autowired
 	private AboutDetailsRepository aboutDetailsRepository;
 	
-	@Transactional
-	public boolean matrimonyUserRegistration(MatrimonyRegistration matrimonyRegistration) {
-		DAOUser user = registerUser(matrimonyRegistration);
-		
-		matrimonyRegistration.getBasicDetails().setUser(user);
-		basicDetailsRepository.save(matrimonyRegistration.getBasicDetails());
-		
-		matrimonyRegistration.getPersonalDetails().setUser(user);
-		personalDetailsRepository.save(matrimonyRegistration.getPersonalDetails());
-		
-		matrimonyRegistration.getReligionDetails().setUser(user);
-		religionDetailsRepository.save(matrimonyRegistration.getReligionDetails());
-		
-		matrimonyRegistration.getStatusDetails().setUser(user);
-		statusDetailsRepository.save(matrimonyRegistration.getStatusDetails());
-		
-		matrimonyRegistration.getProfessionalDetails().setUser(user);
-		professionalDetailsRepository.save(matrimonyRegistration.getProfessionalDetails());
-		
-		matrimonyRegistration.getAboutDetails().setUser(user);
-		aboutDetailsRepository.save(matrimonyRegistration.getAboutDetails());
-		
-		return true;
+	public List<MatrimonyRegistration> myMatProfile(Long userId) {
+		List<MatrimonyRegistration> mr = new ArrayList<>();
+		List<BasicDetails> profile = basicDetailsRepository.findAllByUserId(userId);
+		mr = profile.stream()
+				.map(m -> new MatrimonyRegistration(m, personalDetailsRepository.findByBasicDetail(m)
+						, religionDetailsRepository.findByBasicDetail(m)
+						, professionalDetailsRepository.findByBasicDetail(m)
+						, aboutDetailsRepository.findByBasicDetail(m)
+						, matImageRepository.findAllByBasicDetail(m)))
+				.collect(Collectors.toList());
+		return mr;
 	}
-
-	private DAOUser registerUser(MatrimonyRegistration matrimonyRegistration) {
-		DAOUser user = new DAOUser();
-		user.setFirstName(matrimonyRegistration.getBasicDetails().getName());
-		user.setPhone(matrimonyRegistration.getBasicDetails().getPhone());
-		user.setEmail(matrimonyRegistration.getPersonalDetails().getEmail());
-		user.setUsername(matrimonyRegistration.getPersonalDetails().getEmail());
-		user.setPassword(matrimonyRegistration.getPersonalDetails().getPassword());
-		return userService.save(user);
+	
+	
+	public List<BasicDetails> allProfiles(int offset, int limit){
+		return basicDetailsRepository.findAllProfileByLimit(offset, limit);
 	}
 
 }

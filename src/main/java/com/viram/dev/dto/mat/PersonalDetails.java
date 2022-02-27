@@ -26,15 +26,17 @@ public class PersonalDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
-	private String dob;
-	private String motherTounge;
-	private String email;
-	private String password;
+	private Long id;
+	private String height;
+	private String maritalStatus;
+	private String anyDisability;
+	private String familyStatus;
+	private String familyType;
+	private String familyValue;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "profile_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-    private DAOUser user;
+    private BasicDetails basicDetail;
 }

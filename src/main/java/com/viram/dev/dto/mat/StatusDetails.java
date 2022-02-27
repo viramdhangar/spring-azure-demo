@@ -19,24 +19,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Entity
+//@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 public class StatusDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
+	private Long id;
 	private String height;
 	private String maritalStatus;
 	private String anyDisability;
 	private String familyStatus;
 	private String familyType;
 	private String familyValue;
-	
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore
-    private DAOUser user;
 }

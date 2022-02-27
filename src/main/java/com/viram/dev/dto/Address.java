@@ -1,7 +1,4 @@
-package com.viram.dev.dto.mat;
-
-import java.util.Date;
-import java.util.List;
+package com.viram.dev.dto;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,39 +7,39 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.Transient;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.viram.dev.dto.DAOUser;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
+@Setter
+@Getter
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
-public class BasicDetails {
+@Table(name="address")
+public class Address {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
-	private String profileFor;
+	private String pinCode;
+	private String postOffice;
+	private String addressLine1;
+	private String addressLine2;
+	private String city;
+	private String state;
+	private String landmark;
 	private String name;
-	private String dob;
 	private String phone;
-	private Date created;
-	private String motherTounge;
-	
-	@PrePersist
-	protected void onCreate() {
-		created = new Date();
-	}
+	private String altPhone;
+	private String addressType;
+	private String isDefault;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
@@ -50,12 +47,4 @@ public class BasicDetails {
     @JsonIgnore
     private DAOUser user;
 	
-	@Transient
-	private List<String> base64Data;
-	@Transient
-	private List<MatImageModel> images;
-	
-	@Transient
-	private List<MatImageModel> imagesList;
-
 }

@@ -1,8 +1,16 @@
 package com.viram.dev.service;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Base64;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -149,5 +157,33 @@ public class InitiatePaymentService {
 		paymentResponse.setTxTime(map.get("txTime"));
 		paymentResponse.setType(map.get("type"));
 		return paymentResponse;
+	}
+	public void verifySignature() throws NoSuchAlgorithmException, InvalidKeyException {
+		
+		// get secret
+		SecretDTO secret = secretRepo.findByType(Constants.SECRET);
+		
+		LinkedHashMap<String, String> postData = new LinkedHashMap<String, String>();
+
+		/*
+		 * postData.put("orderId", ORDERID); postData.put("orderAmount", ORDERAMOUNT);
+		 * postData.put("referenceId", REFERENCE_ID); postData.put("txStatus",
+		 * TXN_STATUS); postData.put("paymentMode", PAYMENT_MODE); postData.put("txMsg",
+		 * TX_MSG); postData.put("txTime", TX_TIME);
+		 */
+
+		String data = "";
+		Set<String> keys = postData.keySet();
+
+		for (String key : keys) {
+		    data = data + postData.get(key);
+		}
+		String secretKey = secret.getIdValue();
+		Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
+		SecretKeySpec secret_key_spec = new
+		SecretKeySpec(secretKey.getBytes(),"HmacSHA256");
+		sha256_HMAC.init(secret_key_spec);
+
+		String signature = Base64.getEncoder().encodeToString(sha256_HMAC.doFinal(data.getBytes()));
 	}
 }
