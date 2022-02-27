@@ -33,7 +33,7 @@ public class PersonalDetails {
 	private String familyStatus;
 	private String familyType;
 	private String familyValue;
-	
+	 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "profile_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
